@@ -19,6 +19,7 @@ class ListingsViewModel : ViewModel() {
     val sideEffect = _sideEffect.asSharedFlow()
 
     private val stateMachine = ListingsScreenStateMachine { event ->
+        println("StateMachine : event = $event")
         when (event) {
             is ListingsScreenStateMachine.SideEffect.ItemClicked -> {
                 viewModelScope.launch {
@@ -74,6 +75,10 @@ class ListingsViewModel : ViewModel() {
             Event.OnRefreshItems -> {
                 stateMachine.transition(ListingsScreenStateMachine.Event.OnRefreshItems)
             }
+
+            Event.OnScreenResumed -> {
+                stateMachine.transition(ListingsScreenStateMachine.Event.OnScreenResumed)
+            }
         }
     }
 
@@ -87,6 +92,7 @@ class ListingsViewModel : ViewModel() {
         data object OnRefreshItems : Event
         data class OnItemClicked(val data: String) : Event
         data object OnNavigateBack : Event
+        data object OnScreenResumed : Event
     }
 
     sealed interface SideEffect {

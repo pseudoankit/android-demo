@@ -31,10 +31,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.pseudoankit.androiddemo.SCREEN_DETAIL
+import com.pseudoankit.androiddemo.util.ComposeLifecycle
 
 @Composable
 fun ListingScreen(navController: NavHostController) {
     val viewModel: ListingsViewModel = viewModel()
+
+    ComposeLifecycle(
+        onResume = {
+            viewModel.onEvent(ListingsViewModel.Event.OnScreenResumed)
+        }
+    )
 
     viewModel.CollectSideEffect(navController)
 

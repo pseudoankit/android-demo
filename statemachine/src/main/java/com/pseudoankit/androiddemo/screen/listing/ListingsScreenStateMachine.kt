@@ -43,7 +43,11 @@ class ListingsScreenStateMachine(
             }
         }
         state<State.NavigatedToDetailsScreen> {
-
+            on<Event.OnScreenResumed> {
+                transitionTo(
+                    State.Idle,
+                )
+            }
         }
 
         onTransition {
@@ -68,6 +72,7 @@ class ListingsScreenStateMachine(
         data object OnRefreshItems : Event
         data class OnItemClicked(val data: String) : Event
         data class OnItemsLoaded(val data: List<String>) : Event
+        data object OnScreenResumed : Event
     }
 
     sealed interface SideEffect {
