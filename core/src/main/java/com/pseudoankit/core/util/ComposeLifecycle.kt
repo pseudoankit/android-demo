@@ -1,4 +1,4 @@
-package com.pseudoankit.androiddemo.util
+package com.pseudoankit.core.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect

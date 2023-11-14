@@ -1,5 +1,6 @@
 package com.pseudoankit.androiddemo.screen.listing
 
+import com.pseudoankit.androiddemo.util.sLog
 import com.tinder.StateMachine
 
 class ListingsScreenStateMachine(
@@ -53,11 +54,13 @@ class ListingsScreenStateMachine(
         onTransition {
             val transition =
                 (it as? StateMachine.Transition.Valid)?.sideEffect ?: return@onTransition
+            sLog("after state=${it.toState}, event=${it.sideEffect}")
             onEvent(transition)
         }
     }
 
     fun transition(event: Event) {
+        sLog("before : state=${stateMachine.state}, event=$event")
         stateMachine.transition(event)
     }
 

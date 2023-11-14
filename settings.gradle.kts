@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Android Demo"
 include(":statemachine")
+include(":core")

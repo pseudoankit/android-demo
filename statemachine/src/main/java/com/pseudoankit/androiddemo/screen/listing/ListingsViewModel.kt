@@ -19,7 +19,6 @@ class ListingsViewModel : ViewModel() {
     val sideEffect = _sideEffect.asSharedFlow()
 
     private val stateMachine = ListingsScreenStateMachine { event ->
-        println("StateMachine : event = $event")
         when (event) {
             is ListingsScreenStateMachine.SideEffect.ItemClicked -> {
                 viewModelScope.launch {
