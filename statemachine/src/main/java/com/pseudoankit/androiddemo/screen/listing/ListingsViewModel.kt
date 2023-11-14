@@ -1,4 +1,4 @@
-package com.pseudoankit.androiddemo.screen
+package com.pseudoankit.androiddemo.screen.listing
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,7 +21,9 @@ class ListingsViewModel : ViewModel() {
     private val stateMachine = ListingsScreenStateMachine { event ->
         when (event) {
             is ListingsScreenStateMachine.SideEffect.ItemClicked -> {
-                _sideEffect.tryEmit(SideEffect.NavigateToDetailScreen(event.data))
+                viewModelScope.launch {
+                    _sideEffect.emit(SideEffect.NavigateToDetailScreen(event.data))
+                }
             }
 
             ListingsScreenStateMachine.SideEffect.LoadInitialItems -> {
@@ -30,11 +32,20 @@ class ListingsViewModel : ViewModel() {
             }
 
             ListingsScreenStateMachine.SideEffect.NavigateBack -> {
-                _sideEffect.tryEmit(SideEffect.NavigateBack)
+                viewModelScope.launch {
+                    _sideEffect.emit(SideEffect.NavigateBack)
+                }
             }
 
             ListingsScreenStateMachine.SideEffect.RefreshItems -> {
                 loadItems()
+            }
+
+            is ListingsScreenStateMachine.SideEffect.ItemsLoaded -> {
+                state = state.copy(
+                    items = event.data,
+                    isLoading = false
+                )
             }
         }
     }
@@ -46,10 +57,7 @@ class ListingsViewModel : ViewModel() {
     private fun loadItems() {
         viewModelScope.launch {
             delay(3000)
-            state = state.copy(
-                items = (1..30).map { "Item $it" },
-                isLoading = false
-            )
+            stateMachine.transition(ListingsScreenStateMachine.Event.OnItemsLoaded((1..30).map { "Item $it" }))
         }
     }
 

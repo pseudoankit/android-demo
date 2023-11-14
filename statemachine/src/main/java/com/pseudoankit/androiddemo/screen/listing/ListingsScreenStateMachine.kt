@@ -1,4 +1,4 @@
-package com.pseudoankit.androiddemo.screen
+package com.pseudoankit.androiddemo.screen.listing
 
 import com.tinder.StateMachine
 
@@ -10,8 +10,7 @@ class ListingsScreenStateMachine(
         initialState(State.Idle)
         state<State.Idle> {
             on<Event.OnNavigateBack> {
-                transitionTo(
-                    State.Loading,
+                dontTransition(
                     SideEffect.NavigateBack
                 )
             }
@@ -36,9 +35,20 @@ class ListingsScreenStateMachine(
         }
         state<State.Loading> {
             on<Event.OnNavigateBack> {
-                transitionTo(
-                    State.Loading,
+                dontTransition(
                     SideEffect.NavigateBack
+                )
+            }
+            on<Event.OnItemsLoaded> {
+                transitionTo(
+                    State.Idle,
+                    SideEffect.ItemsLoaded(it.data)
+                )
+            }
+            on<Event.OnItemClicked> {
+                transitionTo(
+                    State.NavigatedToDetailsScreen,
+                    SideEffect.ItemClicked(it.data)
                 )
             }
         }
@@ -68,6 +78,7 @@ class ListingsScreenStateMachine(
         data object OnLoadInitialItems : Event
         data object OnRefreshItems : Event
         data class OnItemClicked(val data: String) : Event
+        data class OnItemsLoaded(val data: List<String>) : Event
     }
 
     sealed interface SideEffect {
@@ -75,5 +86,6 @@ class ListingsScreenStateMachine(
         data object LoadInitialItems : SideEffect
         data object RefreshItems : SideEffect
         data class ItemClicked(val data: String) : SideEffect
+        data class ItemsLoaded(val data: List<String>) : SideEffect
     }
 }

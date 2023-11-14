@@ -1,4 +1,4 @@
-package com.pseudoankit.androiddemo.screen
+package com.pseudoankit.androiddemo.screen.listing
 
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,10 +29,14 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.pseudoankit.androiddemo.SCREEN_DETAIL
 
 @Composable
-fun ListingScreen() {
+fun ListingScreen(navController: NavHostController) {
     val viewModel: ListingsViewModel = viewModel()
+
+    viewModel.CollectSideEffect(navController)
 
     val state = viewModel.state
 
@@ -45,9 +50,9 @@ fun ListingScreen() {
                 Item(data = "", isLoading = true, {})
             }
         }
-        items(state.items) {
+        items(state.items) { item ->
             Item(
-                data = it,
+                data = item,
                 isLoading = false,
                 onClick = {
                     viewModel.onEvent(ListingsViewModel.Event.OnItemClicked(it))
@@ -58,15 +63,33 @@ fun ListingScreen() {
 }
 
 @Composable
+private fun ListingsViewModel.CollectSideEffect(navController: NavHostController) {
+    LaunchedEffect(Unit) {
+        sideEffect.collect { event ->
+            when (event) {
+                ListingsViewModel.SideEffect.NavigateBack -> {
+                    navController.popBackStack()
+                }
+
+                is ListingsViewModel.SideEffect.NavigateToDetailScreen -> {
+                    navController.navigate(SCREEN_DETAIL)
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun Item(data: String, isLoading: Boolean, onClick: (String) -> Unit) {
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp)
-            .background(Color.White)
             .clickable {
                 onClick(data)
             }
+            .fillMaxWidth()
+            .height(80.dp)
+            .background(Color.White)
+
             .shimmerEffect(isLoading),
         contentAlignment = Alignment.Center
     ) {
