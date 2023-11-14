@@ -31,12 +31,6 @@ class ListingsViewModel : ViewModel() {
                 loadItems()
             }
 
-            ListingsScreenStateMachine.SideEffect.NavigateBack -> {
-                viewModelScope.launch {
-                    _sideEffect.emit(SideEffect.NavigateBack)
-                }
-            }
-
             ListingsScreenStateMachine.SideEffect.RefreshItems -> {
                 loadItems()
             }
@@ -62,15 +56,26 @@ class ListingsViewModel : ViewModel() {
     }
 
     fun onEvent(event: Event) {
-        val stateMachineEvent = when (event) {
-            is Event.OnItemClicked -> ListingsScreenStateMachine.Event.OnItemClicked(event.data)
-            Event.OnLoadItems -> ListingsScreenStateMachine.Event.OnLoadInitialItems
-            Event.OnNavigateBack -> ListingsScreenStateMachine.Event.OnNavigateBack
-            Event.OnRefreshItems -> ListingsScreenStateMachine.Event.OnRefreshItems
-        }
-        stateMachine.transition(stateMachineEvent)
-    }
+        when (event) {
+            is Event.OnItemClicked -> {
+                stateMachine.transition(ListingsScreenStateMachine.Event.OnItemClicked(event.data))
+            }
 
+            Event.OnLoadItems -> {
+                stateMachine.transition(ListingsScreenStateMachine.Event.OnLoadInitialItems)
+            }
+
+            Event.OnNavigateBack -> {
+                viewModelScope.launch {
+                    _sideEffect.emit(SideEffect.NavigateBack)
+                }
+            }
+
+            Event.OnRefreshItems -> {
+                stateMachine.transition(ListingsScreenStateMachine.Event.OnRefreshItems)
+            }
+        }
+    }
 
     data class State(
         val items: List<String> = emptyList(),

@@ -9,11 +9,6 @@ class ListingsScreenStateMachine(
     private val stateMachine = StateMachine.create<State, Event, SideEffect> {
         initialState(State.Idle)
         state<State.Idle> {
-            on<Event.OnNavigateBack> {
-                dontTransition(
-                    SideEffect.NavigateBack
-                )
-            }
             on<Event.OnLoadInitialItems> {
                 transitionTo(
                     State.Loading,
@@ -34,11 +29,6 @@ class ListingsScreenStateMachine(
             }
         }
         state<State.Loading> {
-            on<Event.OnNavigateBack> {
-                dontTransition(
-                    SideEffect.NavigateBack
-                )
-            }
             on<Event.OnItemsLoaded> {
                 transitionTo(
                     State.Idle,
@@ -74,7 +64,6 @@ class ListingsScreenStateMachine(
     }
 
     sealed interface Event {
-        data object OnNavigateBack : Event
         data object OnLoadInitialItems : Event
         data object OnRefreshItems : Event
         data class OnItemClicked(val data: String) : Event
@@ -82,7 +71,6 @@ class ListingsScreenStateMachine(
     }
 
     sealed interface SideEffect {
-        data object NavigateBack : SideEffect
         data object LoadInitialItems : SideEffect
         data object RefreshItems : SideEffect
         data class ItemClicked(val data: String) : SideEffect

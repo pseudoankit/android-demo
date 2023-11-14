@@ -83,14 +83,13 @@ private fun ListingsViewModel.CollectSideEffect(navController: NavHostController
 private fun Item(data: String, isLoading: Boolean, onClick: (String) -> Unit) {
     Box(
         modifier = Modifier
-            .clickable {
-                onClick(data)
-            }
             .fillMaxWidth()
             .height(80.dp)
             .background(Color.White)
-
-            .shimmerEffect(isLoading),
+            .shimmerEffect(isLoading)
+            .clickable {
+                onClick(data)
+            },
         contentAlignment = Alignment.Center
     ) {
         Text(text = data, color = Color.Black)
